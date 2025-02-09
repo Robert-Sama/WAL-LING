@@ -3,8 +3,8 @@ from skyfield.api import load, EarthSatellite
 from datetime import datetime, timezone
 import matplotlib.pyplot as plt
 import numpy as np
-from modules import dataLing
-from modules import animateLing as anim  # Imports the animate_point function
+#from modules import dataLing
+#from modules import animateLing as anim  # Imports the animate_point function
 
 # -----------------------------------------------------------------
 # (Optional TLE data processing code is commented out)
@@ -77,6 +77,9 @@ def graphique(debris, payload):
        return fig, ax
 
 if __name__ == "__main__":
+       import threadLing
+       import dataLing
+       import animateLing as anim
        #TODO =================================================================================================
        #Dodge obstacles
        #Delete points or paths when theyre done
@@ -99,7 +102,7 @@ if __name__ == "__main__":
 
        optimized_routes = dataLing.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
 
-       path_verification(optimized_routes)
+       path_verification(optimized_routes, debris)
 
        fig, ax = graphique(debris, payload)
 

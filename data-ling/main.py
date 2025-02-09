@@ -83,6 +83,7 @@ def graphique(debris, payload):
 
 
 #V2
+"""
 def animate_path(points_list):
     #Anime un carré rouge suivant un chemin défini par 'points_list' en 3D.
 
@@ -138,10 +139,75 @@ def animate_path(points_list):
     ani = FuncAnimation(fig, update, frames=len(points), init_func=init, blit=False, interval=500)
 
     plt.show()
+"""
+
+#V3
+def animate_path(points, debris):
+    """Anime un carré rouge suivant un chemin défini par 'points' en 3D et affiche les débris."""
+
+    # Initialisation de la figure 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Affichage des débris sous forme de points gris
+    ax.scatter(debris[:, 0], debris[:, 1], debris[:, 2], c='gray', marker='o', alpha=0.5, label="Débris")
+
+    # Initialisation du carré rouge
+    square = ax.scatter([], [], [], c='r', s=100, label="Robot")
+
+    # Ligne pour le chemin suivi
+    path_line, = ax.plot([], [], [], 'b-', linewidth=2, label="Trajectoire")  # Bleu pour le chemin
+
+    # Définition des limites de l'espace 3D
+    ax.set_xlim(np.min(debris[:, 0]) - 1, np.max(debris[:, 0]) + 1)
+    ax.set_ylim(np.min(debris[:, 1]) - 1, np.max(debris[:, 1]) + 1)
+    ax.set_zlim(np.min(debris[:, 2]) - 1, np.max(debris[:, 2]) + 1)
+
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.set_title("Animation du Robot Nettoyeur")
+
+    ax.legend()
+
+    # Liste pour stocker les points déjà visités
+    visited_x, visited_y, visited_z = [], [], []
+
+    # Fonction d'initialisation de l'animation
+    def init():
+        square._offsets3d = ([], [], [])
+        path_line.set_data([], [])
+        path_line.set_3d_properties([])
+        return square, path_line
+
+    # Fonction de mise à jour de l'animation
+    def update(frame):
+        x, y, z = points[frame]
+
+        # Mise à jour de la position du carré
+        square._offsets3d = ([x], [y], [z])
+
+        # Mise à jour du chemin suivi
+        visited_x.append(x)
+        visited_y.append(y)
+        visited_z.append(z)
+        path_line.set_data(visited_x, visited_y)
+        path_line.set_3d_properties(visited_z)
+
+        # Arrêter l'animation quand tous les points sont parcourus
+        if frame == len(points) - 1:
+            ani.event_source.stop()
+
+        return square, path_line
+
+    # Création de l'animation
+    ani = FuncAnimation(fig, update, frames=len(points), init_func=init, blit=False, interval=500)
+
+    plt.show()
 
 if __name__ == "__main__":
        # Liste de points (exemple)
-       points = np.array([[0, 0, 0], [1.5, 2.0, 3.0], [2.5, 3.0, 1.0], [0, 0, 0]])
+       #points = np.array([[0, 0, 0], [1.5, 2.0, 3.0], [2.5, 3.0, 1.0], [0, 0, 0]])
 
        payload, debris, depot = initialisation()
        weight_debris = [np.random.randint(1, 10) for a in range(len(debris[0]))]

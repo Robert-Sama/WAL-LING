@@ -7,6 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk) 
 from modules.mainLing import *
+from modules import mainLing
 from modules.animateLing import *
 from modules.dataLing import *
 from modules.threadLing import Thread
@@ -74,7 +75,8 @@ def centerUIWindows(window):
 class RootWindow(ttk.Window):
     def __init__(self):
         super().__init__()
-        self.style.load_user_themes("WAL-LING/theme.json")
+        #self.style.load_user_themes("WAL-LING/theme.json")
+        self.style.load_user_themes("theme.json")
         ttk.Style("starship")
         self.title("LINGLING")
         self.resizable(False, False)
