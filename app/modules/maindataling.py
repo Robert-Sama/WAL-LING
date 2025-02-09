@@ -6,7 +6,7 @@ import numpy as np
 import statistics
 #import data
 #import data2
-import data3
+#import app.modules.dataTree as dataTree
 #import animationTest as anim  # Imports the animate_point function
 import matplotlib.cm as cm
 from matplotlib.animation import FuncAnimation
@@ -37,7 +37,7 @@ def initialisation():
 
 
 # Vérification de la traversée
-def path_verification(optimized_routes):
+def path_verification(optimized_routes, debris):
        print("Trajets optimisés :")
        for route in optimized_routes:
               print(route)
@@ -281,6 +281,8 @@ def animate_path(points, debris):
 
     plt.show()
 
+#Commented so that we call it in recycle in the ui file
+"""
 if __name__ == "__main__":
        # Liste de points (exemple)
        #points = np.array([[0, 0, 0], [1.5, 2.0, 3.0], [2.5, 3.0, 1.0], [0, 0, 0]])
@@ -313,6 +315,7 @@ if __name__ == "__main__":
 
     # Lancer l'animation
     #animate_path(points)
+"""
 
 
 

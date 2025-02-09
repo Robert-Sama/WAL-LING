@@ -6,7 +6,7 @@ import numpy as np
 import statistics
 #import data
 #import data2
-import data3
+from modules import dataTree as data3
 #import animationTest as anim  # Imports the animate_point function
 import matplotlib.cm as cm
 from matplotlib.animation import FuncAnimation
@@ -37,7 +37,7 @@ def initialisation():
 
 
 # Vérification de la traversée
-def path_verification(optimized_routes):
+def path_verification(optimized_routes, debris):
        print("Trajets optimisés :")
        for route in optimized_routes:
               print(route)
@@ -239,49 +239,50 @@ def animate_path(points, debris):
     ax.set_title("Animation du Robot Nettoyeur")
 
     ax.legend()
+    return fig, ax
 
     # Liste pour stocker les points déjà visités
     visited_x, visited_y, visited_z = [], [], []
 
     # Fonction d'initialisation de l'animation
     def init():
-        square._offsets3d = ([], [], [])
-        path_line.set_data([], [])
-        path_line.set_3d_properties([])
-        return square, path_line, debris_scatter
+       square._offsets3d = ([], [], [])
+       path_line.set_data([], [])
+       path_line.set_3d_properties([])
+       return square, path_line, debris_scatter
 
     # Fonction de mise à jour de l'animation
     def update(frame):
-        x, y, z = points[frame]
+       x, y, z = points[frame]
 
-        # Mise à jour de la position du carré
-        square._offsets3d = ([x], [y], [z])
+       # Mise à jour de la position du carré
+       square._offsets3d = ([x], [y], [z])
 
-        # Mise à jour du chemin suivi
-        visited_x.append(x)
-        visited_y.append(y)
-        visited_z.append(z)
-        path_line.set_data(visited_x, visited_y)
-        path_line.set_3d_properties(visited_z)
+       # Mise à jour du chemin suivi
+       visited_x.append(x)
+       visited_y.append(y)
+       visited_z.append(z)
+       path_line.set_data(visited_x, visited_y)
+       path_line.set_3d_properties(visited_z)
 
-        # Vérifier si le point actuel est dans les débris
-        for i, (dx, dy, dz) in enumerate(debris):
+       # Vérifier si le point actuel est dans les débris
+       for i, (dx, dy, dz) in enumerate(debris):
             if np.allclose([dx, dy, dz], [x, y, z], atol=1e-2):  # Vérifie si c'est un point de la trajectoire
-                colors[i] = 'red'  # Change la couleur en rouge
-                debris_scatter.set_color(colors)  # Met à jour les couleurs
+              colors[i] = 'red'  # Change la couleur en rouge
+              debris_scatter.set_color(colors)  # Met à jour les couleurs
 
-        # Arrêter l'animation à la fin
-        if frame == len(points) - 1:
-            ani.event_source.stop()
+       # Arrêter l'animation à la fin
+       if frame == len(points) - 1:
+             ani.event_source.stop()
 
-        return square, path_line, debris_scatter
+       return square, path_line, debris_scatter
 
     # Création de l'animation
     ani = FuncAnimation(fig, update, frames=len(points), init_func=init, blit=False, interval=500)
 
-    plt.show()
+    #plt.show()
 
-if __name__ == "__main__":
+def main():
        # Liste de points (exemple)
        #points = np.array([[0, 0, 0], [1.5, 2.0, 3.0], [2.5, 3.0, 1.0], [0, 0, 0]])
 
@@ -289,7 +290,7 @@ if __name__ == "__main__":
        weight_debris = [np.random.randint(1, 10) for a in range(len(debris[0]))]
        capacity_cap = len(debris[0])
        optimized_routes = data3.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
-       path_verification(optimized_routes)
+       path_verification(optimized_routes, debris)
        alt = []
        for path in optimized_routes :
               waypoints = []
@@ -309,7 +310,10 @@ if __name__ == "__main__":
                             #plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]], color=color)
                      waypoints.append(debris_coords)
               alt.extend(waypoints)
-       animate_path(alt, np.array(debris).T )
+       fig, ax = animate_path(alt, np.array(debris).T )
+       #On modifie la fonction pour retourner fig et ax => le but est de pouvoir utiliser ce fig et ce ax dans ui,py
+       return fig , ax, debris
+       #plt.show()
 
     # Lancer l'animation
     #animate_path(points)

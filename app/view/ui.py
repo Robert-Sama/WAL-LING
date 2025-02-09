@@ -6,12 +6,16 @@ from datetime import datetime
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk) 
-from modules.mainLing import *
-from modules import mainLing
 from modules.animateLing import *
-from modules.dataLing import *
 from modules.threadLing import Thread
-from dataling import main as displayPlz
+
+
+from modules import maindataling as displayPlz
+
+from modules import dataTree as data3
+#from modules import full_exec_dataling
+from modules.full_exec_dataling import *
+
 
 MAXDEBRIS = 250
 MAXPAYLOADS = 10
@@ -133,29 +137,6 @@ class RootWindow(ttk.Window):
     def update_Plot(self):
         self.after(0,self.fig.canvas.draw)
 
-    def __recycle(self):
-        # if self.parameters['current']['nDebris'] > 0:
-        #     optimized_routes = clarke_wright_savings(self.debrisArr, self.weight_debris, self.parameters['cargoMax'], self.payloadArr)
-        #     path_verification(optimized_routes, self.debrisArr)
-           
-        #     #     self.add_LogEntry("waypoint")
-        #     #     self.add_LogEntry(str(len(waypoints)))
-        #     ani = []
-        #     for elem in optimized_routes :
-        #         waypoints = []
-        #         for index in elem :
-        #             debris_coords = [self.debrisArr[0][index], self.debrisArr[1][index], self.debrisArr[2][index]]
-
-        #             # On dessine les lignes
-        #             if len(waypoints) >= 1:
-        #             #     #x, y, z => 0, 1, 2
-        #                 plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]])
-        #             waypoints.append(debris_coords)
-        #         ani.extend(waypoints)
-        #     anim.animate_path(ani, self.fig, self.ax)
-        #     self.update_Plot()
-        displayPlz
-
 
     def __refuel(self):
         pass
@@ -167,6 +148,72 @@ class RootWindow(ttk.Window):
         pass
 
     def __regen(self):
+        #zgeg = full_exec_dataling.main()
+        #plt.show()
+        #OG version
+
+        self.after(0, self.ax.clear)
+
+        #Setting vraiables
+        self.payloadArr, self.debrisArr, depot = initialisation()
+        self.weight_debris = [np.random.randint(1, 10) for a in range(len(self.debrisArr[0]))]
+        #self.set_MaxCapacity(len(self.debrisArr[0]))
+
+        #Renaiming variables
+        payload = self.payloadArr
+        debris = self.debrisArr
+        weight_debris = self.weight_debris
+        capacity_cap = len(self.debrisArr[0])
+        #capacity_cap = self.set_MaxCapacity
+
+        #LOGIC : 
+        #optimized_routes = data3.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
+        #path_verification(optimized_routes, debris)
+
+        self.add_scatter(payload[0], payload[1], payload[2], 
+            marker="p",
+            linewidths=3,
+            c = "#ffa620",
+            label="Payload")
+        self.add_scatter([0], [0], [0],
+            marker="P",
+            linewidths=10,
+            c = "#00b976",
+            label="Space Station")
+        self.add_scatter(debris[0], debris[1], debris[2],
+            c = "#da524e",
+            label="Debris")
+        self.after(0, self.fig.legend)
+
+        #self.__recycle(payload, debris, weight_debris, capacity_cap)
+
+        return payload, debris, weight_debris, capacity_cap
+
+        """
+        alt = []
+        for path in optimized_routes :
+            waypoints = []
+            color = np.random.rand(3,) 
+            for point_index in path :
+                    #We take the index of the path
+                    #We transform it into a list of coords
+                    #The loop gives us a list of list of points => [[0,0,0], [np.float, np.float, np.float], ..., [0,0,0]]
+                    debris_coords = [debris[0][point_index], debris[1][point_index], debris[2][point_index]]
+                    #print(debris_coords)
+                    #animate_path(debris_coords)
+
+                    #On dessine les lignes
+                    if len(waypoints) >= 1:
+                        zgeg = True
+                        #x, y, z => 0, 1, 2
+                        #plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]], color=color)
+                    waypoints.append(debris_coords)
+            alt.extend(waypoints)
+        animate_path(alt, np.array(debris).T )
+        """
+
+        
+        """
         self.after(0, self.ax.clear)
         self.set_NDebris(np.random.randint(60, MAXDEBRIS)+1)
         self.set_NPayload(np.random.randint(3, MAXPAYLOADS))
@@ -208,7 +255,95 @@ class RootWindow(ttk.Window):
             c = "#da524e",
             label="Debris")
         self.after(0, self.fig.legend)
+        """
 
+    
+    def __recycle(self):
+        #Tentative3
+        payload, debris, weight_debris, capacity_cap = self.__regen()
+
+        optimized_routes = data3.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
+        path_verification(optimized_routes, debris)
+
+        alt = []
+        for path in optimized_routes :
+            waypoints = []
+            color = np.random.rand(3,) 
+            for point_index in path :
+                    #We take the index of the path
+                    #We transform it into a list of coords
+                    #The loop gives us a list of list of points => [[0,0,0], [np.float, np.float, np.float], ..., [0,0,0]]
+                    debris_coords = [debris[0][point_index], debris[1][point_index], debris[2][point_index]]
+                    #On dessine les lignes
+                    if len(waypoints) >= 1:
+                        zgeg = True
+                    waypoints.append(debris_coords)
+            alt.extend(waypoints)
+            animate_path(alt, np.array(debris).T )
+            #plt.show()
+        #fig, ax = animate_path(alt, np.array(debris).T )
+
+
+        #OG version
+        """
+        if self.parameters['current']['nDebris'] > 0:
+            optimized_routes = data3.clarke_wright_savings(self.debrisArr, self.weight_debris, self.parameters['cargoMax'], self.payloadArr)
+            path_verification(optimized_routes, self.debrisArr)
+           
+            #     self.add_LogEntry("waypoint")
+            #     self.add_LogEntry(str(len(waypoints)))
+            ani = []
+            for elem in optimized_routes :
+                waypoints = []
+                for index in elem :
+                    debris_coords = [self.debrisArr[0][index], self.debrisArr[1][index], self.debrisArr[2][index]]
+
+                    # On dessine les lignes
+                    if len(waypoints) >= 1:
+                    #     #x, y, z => 0, 1, 2
+                        plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]])
+                    waypoints.append(debris_coords)
+                ani.extend(waypoints)
+            data3.anim.animate_path(ani, self.fig, self.ax)
+            self.update_Plot()
+            """
+
+        
+        
+        #First tentative
+        """
+        #displayPlz
+        payload, debris, depot = displayPlz.initialisation()
+        weight_debris = [np.random.randint(1, 10) for a in range(len(debris[0]))]
+        capacity_cap = len(debris[0])
+        optimized_routes = data3.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
+        displayPlz.path_verification(optimized_routes, debris)
+        alt = []
+        for path in optimized_routes :
+              waypoints = []
+              color = np.random.rand(3,) 
+              for point_index in path :
+                     #We take the index of the path
+                     #We transform it into a list of coords
+                     #The loop gives us a list of list of points => [[0,0,0], [np.float, np.float, np.float], ..., [0,0,0]]
+                     debris_coords = [debris[0][point_index], debris[1][point_index], debris[2][point_index]]
+                     #print(debris_coords)
+                     #animate_path(debris_coords)
+
+                     #On dessine les lignes
+                     if len(waypoints) >= 1:
+                            zgeg = True
+                            #x, y, z => 0, 1, 2
+                            #plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]], color=color)
+                     waypoints.append(debris_coords)
+              alt.extend(waypoints)
+              animate_path(alt, np.array(debris).T )
+        """
+
+        #Second tentative
+        #full_exec_dataling.main()
+    
+    
     def create_UI(self):
         mainFrame = ttk.Frame(master=self)
         mainFrame.grid(column=0, row=0, sticky=tk.NSEW, padx=10)
@@ -301,7 +436,10 @@ class RootWindow(ttk.Window):
                         ]
         UI_place_on_Grid(statToolsFrame, statToolsLayout, (5,5))
 
+        #payload, debris, weight_debris, capacity_cap
+        """self.payloadArr, self.debrisArr, self.weight_debris"""
         statButtonLayout = [[
+            #PAS OUBLIER DE MODIFIER SI JAMAIS JE RECHANGE LA FONC RECYCLE
             ttk.Button(statButtonFrame, text="Recycle", command=partial(Thread, "recycle", self.__recycle)),
             ttk.Button(statButtonFrame, text="Refuel", command=self.__refuel),
             ttk.Button(statButtonFrame, text="Recon", command=self.__recon),

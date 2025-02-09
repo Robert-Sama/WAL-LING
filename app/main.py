@@ -1,4 +1,5 @@
 from view.ui import RootWindow
+import matplotlib as plt
 from matplotlib import interactive
 
 if __name__ == "__main__":
