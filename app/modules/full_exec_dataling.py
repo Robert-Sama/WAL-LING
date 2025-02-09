@@ -280,7 +280,7 @@ def animate_path(points, debris):
     # Création de l'animation
     ani = FuncAnimation(fig, update, frames=len(points), init_func=init, blit=False, interval=500)
 
-    #plt.show()
+    plt.show()
 
 def main():
        # Liste de points (exemple)

@@ -185,9 +185,29 @@ class RootWindow(ttk.Window):
             label="Debris")
         self.after(0, self.fig.legend)
 
+        optimized_routes = data3.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
+        path_verification(optimized_routes, debris)
+
+        alt = []
+        for path in optimized_routes :
+            waypoints = []
+            color = np.random.rand(3,) 
+            for point_index in path :
+                    #We take the index of the path
+                    #We transform it into a list of coords
+                    #The loop gives us a list of list of points => [[0,0,0], [np.float, np.float, np.float], ..., [0,0,0]]
+                    debris_coords = [debris[0][point_index], debris[1][point_index], debris[2][point_index]]
+                    #On dessine les lignes
+                    if len(waypoints) >= 1:
+                        zgeg = True
+                    waypoints.append(debris_coords)
+            alt.extend(waypoints)
+            animate_path(alt, np.array(debris).T )
+        plt.show
+
         #self.__recycle(payload, debris, weight_debris, capacity_cap)
 
-        return payload, debris, weight_debris, capacity_cap
+        #return payload, debris, weight_debris, capacity_cap
 
         """
         alt = []
@@ -259,7 +279,9 @@ class RootWindow(ttk.Window):
 
     
     def __recycle(self):
+        pass
         #Tentative3
+        """
         payload, debris, weight_debris, capacity_cap = self.__regen()
 
         optimized_routes = data3.clarke_wright_savings(debris, weight_debris, capacity_cap, payload)
@@ -282,6 +304,7 @@ class RootWindow(ttk.Window):
             animate_path(alt, np.array(debris).T )
             #plt.show()
         #fig, ax = animate_path(alt, np.array(debris).T )
+        """
 
 
         #OG version
