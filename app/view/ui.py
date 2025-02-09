@@ -11,6 +11,7 @@ from modules import mainLing
 from modules.animateLing import *
 from modules.dataLing import *
 from modules.threadLing import Thread
+from dataling import main as displayPlz
 
 MAXDEBRIS = 250
 MAXPAYLOADS = 10
@@ -133,26 +134,28 @@ class RootWindow(ttk.Window):
         self.after(0,self.fig.canvas.draw)
 
     def __recycle(self):
-        if self.parameters['current']['nDebris'] > 0:
-            optimized_routes = clarke_wright_savings(self.debrisArr, self.weight_debris, self.parameters['cargoMax'], self.payloadArr)
-            path_verification(optimized_routes, self.debrisArr)
+        # if self.parameters['current']['nDebris'] > 0:
+        #     optimized_routes = clarke_wright_savings(self.debrisArr, self.weight_debris, self.parameters['cargoMax'], self.payloadArr)
+        #     path_verification(optimized_routes, self.debrisArr)
            
-            #     self.add_LogEntry("waypoint")
-            #     self.add_LogEntry(str(len(waypoints)))
-            ani = []
-            for elem in optimized_routes :
-                waypoints = []
-                for index in elem :
-                    debris_coords = [self.debrisArr[0][index], self.debrisArr[1][index], self.debrisArr[2][index]]
+        #     #     self.add_LogEntry("waypoint")
+        #     #     self.add_LogEntry(str(len(waypoints)))
+        #     ani = []
+        #     for elem in optimized_routes :
+        #         waypoints = []
+        #         for index in elem :
+        #             debris_coords = [self.debrisArr[0][index], self.debrisArr[1][index], self.debrisArr[2][index]]
 
-                    # On dessine les lignes
-                    if len(waypoints) >= 1:
-                    #     #x, y, z => 0, 1, 2
-                        plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]])
-                    waypoints.append(debris_coords)
-                ani.extend(waypoints)
-            anim.animate_path(ani, self.fig, self.ax)
-            self.update_Plot()
+        #             # On dessine les lignes
+        #             if len(waypoints) >= 1:
+        #             #     #x, y, z => 0, 1, 2
+        #                 plt.plot([debris_coords[0], waypoints[-1][0]], [debris_coords[1], waypoints[-1][1]], [[debris_coords[2], waypoints[-1][2]]])
+        #             waypoints.append(debris_coords)
+        #         ani.extend(waypoints)
+        #     anim.animate_path(ani, self.fig, self.ax)
+        #     self.update_Plot()
+        displayPlz
+
 
     def __refuel(self):
         pass
